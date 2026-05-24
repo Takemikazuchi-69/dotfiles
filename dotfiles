@@ -1,0 +1,82 @@
+# my linux alias/shortcuts
+alias c='clear'
+alias r='reset'
+alias ee='exit'
+alias ll='ls -la'
+alias gc='git clone'
+alias update='sudo pacman -Syu'
+alias ani='ani-cli -q 1080'
+alias ff='fastfetch'
+
+# git shortcut thing (could be more optimised but im lazy):
+gits() {
+	if [ -z "$1"]; then
+		read -p "do you want to commit with today's date and time? " input
+		# this handles all variations:
+		if [[ "$input" =~ ^[Yy]([Ee][Ss]) ]]; then
+			echo "pushing with today's date and time: $(date '+%Y-%m-%d %H:%M:%S') "
+			git add . 
+			git commit -m "$(date '+%Y-%m-%d %H:%M:%S')"
+			git push
+			
+		else 
+			echo "then... provide a commit title, bitch"
+			return 1
+		fi
+	fi
+
+	git add . 
+
+	if [ -z "$2" ]; then
+		git commit -m "$1"
+	else 
+		git commit -m "$1" -m "$2"
+	fi
+
+	git push
+}
+
+# fcd for faster file/folder lookup and cd
+fcd() {
+	local dir 
+	dir=$(find ${1:-.} -path '*/.*' -prune -o -type d -print 2> /dev/null | fzf +m) &&
+		cd "$dir"
+}
+
+# exercism stuff since i prefer to use the cli version over the website
+ex() {
+	exercism download --track="$1" --exercise="$2"
+}
+
+# a script to add .gitkeep in every empty dir in a project to protect the integrity of the projects layout
+addfile() {
+  for dir in */; do
+    cd "$dir" || continue
+    if [ -z "$(ls -A)" ]; then
+      touch .gitkeep
+    fi
+
+    cd ..
+  done
+}
+
+# explained - https://youtu.be/D0sG2fj0G4Y
+# borrowed heavily from https://grml.org
+# sexy colourisation of Man Page
+# although...this doesnt work because i dont think it detects the man
+export LESS_TERMCAP_mb=$'\e[1;31m'
+export LESS_TERMCAP_md=$'\e[1;31m'
+export LESS_TERMCAP_me=$'\e[0m'
+export LESS_TERMCAP_se=$'\e[0m'
+export LESS_TERMCAP_so=$'\e[1;33;44m'
+export LESS_TERMCAP_ue=$'\e[0m'
+export LESS_TERMCAP_us=$'\e[4;1;32m'
+export LESS_TERMCAP_mr=$'\e[7m'
+export LESS_TERMCAP_mh=$'\e[2m'
+export LESS_TERMCAP_ZN=$'\e[74m'
+export LESS_TERMCAP_ZV=$'\e[75m'
+export LESS_TERMCAP_ZO=$'\e[73m'
+export LESS_TERMCAP_ZW=$'\e[75m'
+export LESS='-R'
+export MANPAGER='less'
+
